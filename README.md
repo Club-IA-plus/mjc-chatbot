@@ -9,6 +9,18 @@ mjc-chatbot is a chatbot project for MJC Fecamp
 - **Docker Compose** — multi-container orchestration
 - **Ansible** — deployment automation
 
+## Launch 
+
+### Local development (Docker)
+
+1. Copy `.env.example` to `.env` and adjust if needed.
+2. `make dev-build` — build images
+3. `make dev-run` — start PostgreSQL, API, and frontend (`http://localhost:3000`, API `http://localhost:8000`, docs `http://localhost:8000/docs`)
+4. `make dev-kill` 
+
+The smoke check calls same-origin `GET /api/backend/health`; Next.js rewrites that to the FastAPI service (`BACKEND_INTERNAL_URL`, default `http://backend:8000` at image build). So the browser never needs a public URL for port 8000. To reset the database volume: `docker compose down -v` then `make dev-run` again. For `next dev` on the host only, set `BACKEND_INTERNAL_URL=http://127.0.0.1:8000` in `frontend/.env.local`.
+
+
 ## Technology
 
 | Layer | Stack |
