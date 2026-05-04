@@ -1,9 +1,23 @@
+import asyncio
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="mjc-chatbot API", version="0.1.0")
+from app.db_util import ensure_schema_at_startup
+from app.routers import chat as chat_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Run DDL migrations on startup (idempotent)."""
+    await asyncio.to_thread(ensure_schema_at_startup)
+    yield
+
+
+app = FastAPI(title="mjc-chatbot API", version="0.1.0", lifespan=lifespan)
+app.include_router(chat_router.router, prefix="/api/v1", tags=["chat"])
 
 app.add_middleware(
     CORSMiddleware,
