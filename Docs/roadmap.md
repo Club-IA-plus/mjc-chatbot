@@ -1,8 +1,20 @@
-# Roadmap 
+# Roadmap
 
-Task: 
+## Tasks
 
-- Improve interface design with color and design 
-- Create iframe interface for add interface in other website
-- Create admin user in DB, and create dashboard interface (for stats)
-- Improve response (long, chunk, quality..) (no markdown in response)
+| Task | Description | Owner | Status |
+|------|-------------|-------|--------|
+| Do not answer in Markdown (or parse it before rendering) | Ensure chatbot output is plain text for end users, or safely interpret Markdown before display. | Unassigned | Todo |
+| Improve UI with MJC IA club colors and Goellan mascot | Refresh chat interface visual identity with MJC AI club color palette and Goellan mascot assets. | Unassigned | Todo |
+| Export chat widget for external websites (iframe/CDN) | Make chatbot embeddable on websites (including MJC site) via iframe or CDN widget, and redesign floating bubble/chat-tab button. | Unassigned | Todo |
+| Improve knowledge data sources | Enrich indexed content with MJC organization chart, association statutes, and events. | Unassigned | Todo |
+| Improve answer rendering and precision (chunking) | Tune chunk size/overlap/retrieval to improve relevance and readability of answers. | Unassigned | Todo |
+| Improve system prompt (role/limits/instructions) | Refine assistant role, boundaries, and behavioral rules for safer and clearer responses. | Unassigned | Todo |
+| Create a classic relational database layer for dashboard users | Add standard relational tables (possibly in same PostgreSQL instance as pgvector) with MJC user fixtures for usage/history dashboard. | Unassigned | Todo |
+| Build dedicated dashboard UI with auth and stats | Create separate admin interface with login and chatbot usage/statistics pages. | Unassigned | Todo |
+| Enable Cloudflare rate limiting | Configure Cloudflare protections and rate limits for chatbot/API endpoints. | Unassigned | Todo |
+| Add Ansible deployment scripts | Provide automated deployment playbooks/roles for infrastructure and application rollout. | Unassigned | Todo |
+
+
+
+Status task = Finish, In progress, Todo
