@@ -55,6 +55,13 @@ Une base classique (ex: **PostgreSQL**) stocke des données structurées :
 On interroge souvent avec des conditions exactes :
 `id = 12`, `date > ...`, `email = ...`.
 
+Exemple simple d'une table `users` :
+
+| id (PK) | email | username | password_hash |
+|---------|-------|----------|---------------|
+| 1 | admin@mjc-fecamp.fr | admin | `$2b$12$...` |
+| 2 | jean.dupont@email.fr | jdupont | `$2b$12$...` |
+
 ```mermaid
 flowchart TD
     A[Backend] --> B[(Base classique)]
@@ -76,6 +83,15 @@ Exemple :
 Quand l'utilisateur pose une question, on vectorise la question puis on cherche les textes les plus proches en sens.
 
 Dans ce projet, c'est PostgreSQL + **pgvector**.
+
+Exemple simple d'une table vectorielle `document_chunks` :
+
+| id (PK) | source_path | chunk_index | content | embedding (vector) |
+|---------|-------------|-------------|---------|---------------------|
+| 101 | `calendar2025-2026.md` | 0 | "Inscriptions à partir du 2 septembre..." | `[0.023, -0.441, 0.102, ...]` |
+| 102 | `activity2025-2026.md` | 3 | "Atelier théâtre le mercredi..." | `[-0.118, 0.209, 0.774, ...]` |
+
+Ici, la colonne `embedding` ne sert pas à afficher un texte à l'utilisateur ; elle sert à calculer la proximité de sens entre la question et les chunks.
 
 ```mermaid
 flowchart TD
