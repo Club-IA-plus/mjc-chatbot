@@ -1,41 +1,39 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Chat } from "@/components/Chat";
+import { HealthBadge } from "@/components/HealthBadge";
+import { brand } from "@/brand/brand";
 import styles from "./page.module.css";
 
-/** Home: chat UI plus optional backend health indicator. */
 export default function Home() {
-  const [health, setHealth] = useState<string>("…");
-
-  useEffect(() => {
-    const url = "/api/backend/health";
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-        return res.json() as Promise<{ status?: string }>;
-      })
-      .then((data) => setHealth(data.status === "ok" ? "OK" : JSON.stringify(data)))
-      .catch((err: unknown) => {
-        const message = err instanceof Error ? err.message : String(err);
-        setHealth(`erreur: ${message}`);
-      });
-  }, []);
-
   return (
     <main className={styles.main}>
       <header className={styles.header}>
-        <h1 className={styles.title}>MJC Chatbot</h1>
-        <p className={styles.sub}>
-          Assistant MJC Fécamp — API{" "}
-          <span className={styles.badge} title="GET /health via proxy">
-            {health}
-          </span>
-        </p>
+        <Image
+          className={styles.logo}
+          src={brand.assets.mjcLogo}
+          alt={`${brand.name} — logo`}
+          width={44}
+          height={44}
+          priority
+        />
+        <h1 className={styles.title}>{brand.productName}</h1>
+        <HealthBadge />
       </header>
+
       <Chat />
+
+      <footer className={styles.footer}>
+        <p>
+          Développé par le Club IA de Fécamp —{" "}
+          <a href="http://mjcfecamp.org" target="_blank" rel="noreferrer">
+            mjcfecamp.org
+          </a>{" "}
+          ·{" "}
+          <a href="https://www.club-ia-plus.fr" target="_blank" rel="noreferrer">
+            club-ia-plus.fr
+          </a>
+        </p>
+      </footer>
     </main>
   );
 }

@@ -1,0 +1,18 @@
+.badge,
+.badgeError {
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge {
+  background: var(--brand-success-bg);
+  color: var(--brand-success-text);
+}
+
+.badgeError {
+  background: color-mix(in srgb, var(--brand-danger) 10%, white);
+  color: var(--brand-danger);
+}
