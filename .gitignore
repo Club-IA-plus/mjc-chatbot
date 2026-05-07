@@ -10,3 +10,10 @@ out/
 dist/
 *.log
 .DS_Store
+
+# Temporary: ignore local scripts experiments
+scripts/
+
+# Claude Code
+CLAUDE.md
+.claude/
