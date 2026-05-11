@@ -17,8 +17,8 @@ This document explains how to contribute to `mjc-chatbot` using the branch strat
    - `git checkout develop`
 3. Update your local `develop` before starting:
    - `git pull origin develop`
-4. Create your feature branch from `develop`:
-   - `git checkout -b feature/<short-feature-name>`
+4. Create your feature branch from `develop`, including the issue number:
+   - `git checkout -b feature/<issue-number>-<short-description>` (e.g. `feature/6-no-markdown-response`)
 5. Work on your changes and commit regularly.
 6. Push your branch:
    - `git push -u origin feature/<short-feature-name>`
