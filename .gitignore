@@ -17,3 +17,7 @@ scripts/
 # Claude Code
 CLAUDE.md
 .claude/
+.vscode/settings.json
+.vscode/launch.json
+/Docs/plans
+frontend/.env.local
