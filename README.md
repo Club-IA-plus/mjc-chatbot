@@ -26,8 +26,16 @@ Open the app at `/` : chat thread + `POST /api/v1/chat` (see **Chat UI & API** b
 - http://162.19.241.44:3000/ (interface chatbot test)
 - http://162.19.241.44:8000/health (backend)
 - http://162.19.241.44:8000/docs (endpoint documentation backend)
-- TODO: administration interface (connexion user, see stats)
+- http://162.19.241.44:3000/dashboard/login
 - http://162.19.241.44:3000/embed (script embed for other website)
+
+Create fake user with: 
+
+```
+docker compose exec backend python -m app.admin_cli seed-admin \
+  --email admin@mjc-fecamp.fr \
+  --password 'adminadmin'
+``` 
 
 ```
 <script src="http://162.19.241.44:3000/widget.js"></script>
