@@ -2,8 +2,14 @@ from typing import Any
 
 try:
     from mistralai.client import Mistral
+    from mistralai.client.errors import MistralError
 except ImportError:  # pragma: no cover - depends on mistralai wheel layout
     from mistralai import Mistral
+
+    class MistralError(Exception):  # type: ignore[no-redef]
+        """Fallback when mistralai.client.errors is unavailable."""
+
+        status_code: int = 0
 
 from app.models import ChatResult
 from app.settings import (
@@ -38,8 +44,11 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     if not key:
         raise RuntimeError("MISTRAL_API_KEY is not set")
     model = get_mistral_embed_model()
-    with Mistral(api_key=key) as client:
-        response = client.embeddings.create(model=model, inputs=texts)
+    try:
+        with Mistral(api_key=key) as client:
+            response = client.embeddings.create(model=model, inputs=texts)
+    except MistralError:
+        raise
     vectors = _embedding_vectors(response)
     if len(vectors) != len(texts):
         raise RuntimeError(
@@ -60,13 +69,16 @@ def chat_complete(messages: list[dict[str, str]]) -> ChatResult:
     if not key:
         raise RuntimeError("MISTRAL_API_KEY is not set")
     model = get_mistral_chat_model()
-    with Mistral(api_key=key) as client:
-        response = client.chat.complete(
-            model=model,
-            messages=messages,
-            stream=False,
-            response_format={"type": "text"},
-        )
+    try:
+        with Mistral(api_key=key) as client:
+            response = client.chat.complete(
+                model=model,
+                messages=messages,
+                stream=False,
+                response_format={"type": "text"},
+            )
+    except MistralError:
+        raise
     choices = getattr(response, "choices", None)
     if not choices:
         raise RuntimeError(f"Mistral returned no choices: {response!r}")

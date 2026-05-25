@@ -1,6 +1,15 @@
+import logging
 import uuid
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
+
+try:
+    from mistralai.client.errors import MistralError
+except ImportError:
+    class MistralError(Exception):  # type: ignore[no-redef]
+        status_code: int = 0
+
+logger = logging.getLogger(__name__)
 
 from app.db_util import get_connection
 from app.knowledge_sources import load_knowledge_markdown_files
@@ -13,6 +22,31 @@ from app.settings import get_mistral_chat_model, get_model_cost_map
 from app.system_prompt import load_default_system_prompt
 
 router = APIRouter()
+
+
+def _http_error_for_chat(exc: Exception) -> HTTPException:
+    """Map backend/Mistral failures to an HTTP status and a safe client message."""
+    if isinstance(exc, MistralError):
+        if exc.status_code == 429:
+            return HTTPException(
+                status_code=503,
+                detail=(
+                    "Mistral capacity exceeded for this model. "
+                    "Retry later or set MISTRAL_CHAT_MODEL (e.g. open-mistral-nemo)."
+                ),
+            )
+        if exc.status_code in (401, 403):
+            return HTTPException(
+                status_code=503,
+                detail="Mistral API authentication failed. Check MISTRAL_API_KEY.",
+            )
+        return HTTPException(
+            status_code=502,
+            detail=f"Mistral API error (HTTP {exc.status_code}).",
+        )
+    if isinstance(exc, RuntimeError):
+        return HTTPException(status_code=502, detail=str(exc))
+    return HTTPException(status_code=502, detail="An internal error occurred.")
 
 
 def _insert_chat_log(result: ChatResult, body: ChatRequest) -> None:
@@ -83,7 +117,8 @@ def post_chat(body: ChatRequest, background_tasks: BackgroundTasks) -> ChatRespo
         if "MISTRAL_API_KEY" in str(exc):
             raise HTTPException(status_code=503, detail="Service not configured.") from exc
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except (RuntimeError, Exception) as exc:
-        raise HTTPException(status_code=502, detail="An internal error occurred.") from exc
+    except Exception as exc:
+        logger.exception("chat turn failed")
+        raise _http_error_for_chat(exc) from exc
     background_tasks.add_task(_insert_chat_log, result, body)
     return ChatResponse(reply=result.content)

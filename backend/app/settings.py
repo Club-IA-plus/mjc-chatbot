@@ -30,7 +30,7 @@ def get_mistral_api_key() -> str:
 
 def get_mistral_chat_model() -> str:
     """Chat completion model id."""
-    return os.getenv("MISTRAL_CHAT_MODEL", "mistral-small-latest").strip()
+    return os.getenv("MISTRAL_CHAT_MODEL", "open-mistral-nemo").strip()
 
 
 def get_mistral_embed_model() -> str:
