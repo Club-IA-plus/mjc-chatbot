@@ -42,6 +42,7 @@ services:
       args:
         BACKEND_INTERNAL_URL: http://backend:8000
         NEXT_PUBLIC_WIDGET_BASE_URL: ${NEXT_PUBLIC_WIDGET_BASE_URL:-http://localhost:3000}
+        NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?NEXTAUTH_SECRET must be set in .env}
     environment:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
