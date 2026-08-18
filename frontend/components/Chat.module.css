@@ -1,108 +1,232 @@
+/* Card that fills the flex column between header and footer */
 .wrap {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  max-width: 40rem;
-  margin: 0 auto;
-  min-height: 60vh;
-  gap: 0.75rem;
+  background: var(--brand-surface-solid, #fff);
+  border: 1px solid var(--brand-border, rgba(11, 18, 32, 0.12));
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(11, 18, 32, 0.08);
 }
 
+/* Scrollable message thread */
 .messages {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem;
+  padding: 1rem 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background: #fafafa;
+  gap: 0.85rem;
+  scroll-behavior: smooth;
 }
 
-.hint {
+/* ── Welcome state ─────────────────────────────── */
+
+.welcome {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.85rem;
+  padding: 0.5rem 0;
+}
+
+.welcomeAvatar {
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 10px rgba(11, 18, 32, 0.14));
+}
+
+.welcomeBubble {
+  background: var(--brand-surface-solid, #fff);
+  border: 1px solid var(--brand-border, rgba(11, 18, 32, 0.12));
+  border-radius: 16px 16px 16px 4px;
+  padding: 0.85rem 1.1rem;
+  box-shadow: 0 2px 12px rgba(11, 18, 32, 0.08);
+  max-width: 100%;
+}
+
+.welcomeBubble p {
   margin: 0;
-  color: #666;
-  font-size: 0.95rem;
+  font-size: 0.97rem;
+  line-height: 1.6;
+  color: var(--brand-text, #0b1220);
 }
 
-.bubbleUser,
+/* ── Message rows ──────────────────────────────── */
+
+.rowBot,
+.rowUser {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  max-width: 94%;
+}
+
+.rowBot {
+  align-self: flex-start;
+}
+
+.rowUser {
+  align-self: flex-end;
+}
+
+.avatar {
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-accent2, #13aff0) 14%, white);
+}
+
+.bubbleBot,
+.bubbleUser {
+  padding: 0.65rem 0.9rem;
+}
+
 .bubbleBot {
-  max-width: 85%;
-  padding: 0.65rem 0.85rem;
-  border-radius: 10px;
+  background: var(--brand-surface-solid, #fff);
+  border: 1px solid var(--brand-border, rgba(11, 18, 32, 0.12));
+  border-radius: 16px 16px 16px 4px;
+  box-shadow: 0 2px 8px rgba(11, 18, 32, 0.07);
 }
 
 .bubbleUser {
-  align-self: flex-end;
-  background: #1565c0;
+  background: var(--brand-accent, #0070b8);
   color: #fff;
-}
-
-.bubbleUser .meta {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.bubbleBot {
-  align-self: flex-start;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-}
-
-.meta {
-  display: block;
-  font-size: 0.75rem;
-  opacity: 0.85;
-  margin-bottom: 0.25rem;
+  border-radius: 16px 16px 4px 16px;
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--brand-accent, #0070b8) 38%, transparent);
 }
 
 .text {
   margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
-  font-size: 0.95rem;
-  line-height: 1.45;
 }
+
+.time {
+  display: block;
+  text-align: right;
+  font-size: 0.68rem;
+  margin-top: 0.3rem;
+  opacity: 0.6;
+  letter-spacing: 0.01em;
+}
+
+/* ── Typing indicator ──────────────────────────── */
+
+.typing {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 4px 2px;
+}
+
+.typing span {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand-accent2, #13aff0);
+  animation: dot 1.4s infinite ease-in-out;
+}
+
+.typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* ── Error banner ──────────────────────────────── */
+
+.error {
+  margin: 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--brand-danger, #b71c1c) 10%, white);
+  color: var(--brand-danger, #b71c1c);
+  font-size: 0.88rem;
+  border: 1px solid color-mix(in srgb, var(--brand-danger, #b71c1c) 22%, transparent);
+}
+
+/* ── Input bar ─────────────────────────────────── */
 
 .form {
   display: flex;
-  flex-direction: column;
+  align-items: flex-end;
   gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--brand-border, rgba(11, 18, 32, 0.12));
+  background: var(--brand-bg, #f8fafc);
 }
 
 .input {
-  width: 100%;
-  resize: vertical;
-  min-height: 3rem;
-  padding: 0.5rem 0.65rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  flex: 1;
+  resize: none;
+  min-height: 44px;
+  max-height: 120px;
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--brand-border, rgba(11, 18, 32, 0.12));
+  background: var(--brand-surface-solid, #fff);
   font: inherit;
+  font-size: 0.96rem;
+  color: var(--brand-text, #0b1220);
+  line-height: 1.5;
+  overflow-y: auto;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--brand-accent2, #13aff0);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-accent, #0070b8) 14%, transparent);
 }
 
 .send {
-  align-self: flex-end;
-  padding: 0.45rem 1.1rem;
-  border-radius: 8px;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   border: none;
-  background: #1565c0;
+  background: var(--brand-accent, #0070b8);
   color: #fff;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: background 0.15s;
+}
+
+.send:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-accent, #0070b8) 80%, black);
+}
+
+.send:focus-visible {
+  outline: 3px solid var(--brand-accent2, #13aff0);
+  outline-offset: 2px;
 }
 
 .send:disabled {
-  opacity: 0.55;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-.error {
-  margin: 0;
-  padding: 0.5rem 0.65rem;
-  border-radius: 8px;
-  background: #ffebee;
-  color: #b71c1c;
-  font-size: 0.9rem;
-}
+/* ── Accessibility ─────────────────────────────── */
 
 .srOnly {
   position: absolute;
@@ -114,4 +238,30 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ── Motion ────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .typing span {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ── Responsive ────────────────────────────────── */
+
+@media (min-width: 521px) {
+  .rowBot,
+  .rowUser {
+    max-width: 84%;
+  }
+
+  .messages {
+    padding: 1.25rem 1rem;
+  }
+
+  .welcomeBubble {
+    max-width: 380px;
+  }
 }

@@ -23,11 +23,15 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql://mjc:mjc@db:5432/mjcbot}
       MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
-      MISTRAL_CHAT_MODEL: ${MISTRAL_CHAT_MODEL:-mistral-small-latest}
+      MISTRAL_CHAT_MODEL: ${MISTRAL_CHAT_MODEL:-open-mistral-nemo}
       MISTRAL_EMBED_MODEL: ${MISTRAL_EMBED_MODEL:-mistral-embed}
       RAG_TOP_K: ${RAG_TOP_K:-5}
       MISTRAL_EMBED_DIM: ${MISTRAL_EMBED_DIM:-1024}
       DATA_DIR: /data
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-}
+      RETENTION_DAYS: ${RETENTION_DAYS:-365}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
     volumes:
       - ./data:/data:ro
     depends_on:
@@ -39,6 +43,12 @@ services:
       context: ./frontend
       args:
         BACKEND_INTERNAL_URL: http://backend:8000
+        NEXT_PUBLIC_WIDGET_BASE_URL: ${NEXT_PUBLIC_WIDGET_BASE_URL:-http://localhost:3000}
+        NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?NEXTAUTH_SECRET must be set in .env}
+    environment:
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      BACKEND_INTERNAL_URL: http://backend:8000
     ports:
       - "3000:3000"
     depends_on:

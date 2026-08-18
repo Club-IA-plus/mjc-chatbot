@@ -2,9 +2,16 @@ from typing import Any
 
 try:
     from mistralai.client import Mistral
+    from mistralai.client.errors import MistralError
 except ImportError:  # pragma: no cover - depends on mistralai wheel layout
     from mistralai import Mistral
 
+    class MistralError(Exception):  # type: ignore[no-redef]
+        """Fallback when mistralai.client.errors is unavailable."""
+
+        status_code: int = 0
+
+from app.models import ChatResult
 from app.settings import (
     get_embedding_dimensions,
     get_mistral_api_key,
@@ -37,8 +44,11 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     if not key:
         raise RuntimeError("MISTRAL_API_KEY is not set")
     model = get_mistral_embed_model()
-    with Mistral(api_key=key) as client:
-        response = client.embeddings.create(model=model, inputs=texts)
+    try:
+        with Mistral(api_key=key) as client:
+            response = client.embeddings.create(model=model, inputs=texts)
+    except MistralError:
+        raise
     vectors = _embedding_vectors(response)
     if len(vectors) != len(texts):
         raise RuntimeError(
@@ -53,19 +63,22 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     return vectors
 
 
-def chat_complete(messages: list[dict[str, str]]) -> str:
-    """Run one non-streaming chat completion and return assistant text."""
+def chat_complete(messages: list[dict[str, str]]) -> ChatResult:
+    """Run one non-streaming chat completion and return a ChatResult."""
     key = get_mistral_api_key()
     if not key:
         raise RuntimeError("MISTRAL_API_KEY is not set")
     model = get_mistral_chat_model()
-    with Mistral(api_key=key) as client:
-        response = client.chat.complete(
-            model=model,
-            messages=messages,
-            stream=False,
-            response_format={"type": "text"},
-        )
+    try:
+        with Mistral(api_key=key) as client:
+            response = client.chat.complete(
+                model=model,
+                messages=messages,
+                stream=False,
+                response_format={"type": "text"},
+            )
+    except MistralError:
+        raise
     choices = getattr(response, "choices", None)
     if not choices:
         raise RuntimeError(f"Mistral returned no choices: {response!r}")
@@ -75,4 +88,12 @@ def chat_complete(messages: list[dict[str, str]]) -> str:
         content = "".join(str(part) for part in content)
     if content is None or str(content).strip() == "":
         raise RuntimeError("Mistral returned an empty assistant message")
-    return str(content)
+    usage = getattr(response, "usage", None)
+    prompt_tokens = getattr(usage, "prompt_tokens", 0) if usage else 0
+    completion_tokens = getattr(usage, "completion_tokens", 0) if usage else 0
+    return ChatResult(
+        content=str(content),
+        prompt_tokens=prompt_tokens,
+        completion_tokens=completion_tokens,
+        latency_ms=0,  # caller measures wall time
+    )

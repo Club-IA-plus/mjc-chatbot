@@ -1,4 +1,10 @@
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Load repo-root .env without overriding variables already set in the environment.
+load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
 
 def _env_int(name: str, default: int) -> int:
@@ -24,7 +30,7 @@ def get_mistral_api_key() -> str:
 
 def get_mistral_chat_model() -> str:
     """Chat completion model id."""
-    return os.getenv("MISTRAL_CHAT_MODEL", "mistral-small-latest").strip()
+    return os.getenv("MISTRAL_CHAT_MODEL", "open-mistral-nemo").strip()
 
 
 def get_mistral_embed_model() -> str:
@@ -40,3 +46,45 @@ def get_rag_top_k() -> int:
 def get_embedding_dimensions() -> int:
     """Vector column size; must match Mistral embedding length for mistral-embed."""
     return _env_int("MISTRAL_EMBED_DIM", 1024)
+
+
+def get_nextauth_secret() -> str:
+    secret = os.getenv("NEXTAUTH_SECRET", "").strip()
+    if not secret:
+        raise RuntimeError("NEXTAUTH_SECRET is not set")
+    return secret
+
+
+def get_retention_days() -> int:
+    return _env_int("RETENTION_DAYS", 365)
+
+
+def get_cors_origins() -> list[str]:
+    """Allowed CORS origins (comma-separated)."""
+    return os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+
+
+def get_data_dir() -> str:
+    """Directory scanned for *.md during ingestion."""
+    return os.getenv("DATA_DIR", "/data").strip() or "/data"
+
+
+def get_seed_admin_email() -> str | None:
+    """Dev bootstrap: admin email to upsert on startup when password is also set."""
+    email = os.getenv("SEED_ADMIN_EMAIL", "").strip()
+    return email or None
+
+
+def get_seed_admin_password() -> str | None:
+    """Dev bootstrap: admin password to upsert on startup when email is also set."""
+    password = os.getenv("SEED_ADMIN_PASSWORD", "").strip()
+    return password or None
+
+
+def get_model_cost_map() -> dict[str, float]:
+    """Price per 1 000 tokens in EUR (prompt + completion averaged)."""
+    return {
+        "mistral-small-latest": 0.0002,
+        "mistral-medium-latest": 0.00275,
+        "mistral-large-latest": 0.008,
+    }
